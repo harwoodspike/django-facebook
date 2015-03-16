@@ -17,7 +17,7 @@ except AttributeError:
         'FACEBOOK_APP_SECRET and FACEBOOK_REDIRECT_URI to use django-facebook')
 
 BACKEND_STR = 'django_facebook.auth.FacebookModelBackend'										# String version of the location to the Facebook Authentication class
-USER_MODEL_FACEBOOK_ID = getattr(settings, 'USER_MODEL_FACEBOOK_ID', User.get_username())		# Field on the user model that stores the facebook_id
+USER_MODEL_FACEBOOK_ID = getattr(settings, 'USER_MODEL_FACEBOOK_ID', User.USERNAME_FIELD)		# Field on the user model that stores the facebook_id
 
 VERSION = getattr(settings, 'FACEBOOK_VERSION', "2.2")
 auth = facebook.Auth(APP_ID, APP_SECRET, REDIRECT_URI, VERSION)
