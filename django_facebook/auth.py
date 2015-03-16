@@ -102,7 +102,7 @@ class FacebookModelBackend(ModelBackend):
         log.debug('FacebookModelBackend.get_user called')
         if self.create_on_not_found:
             user, created = User.objects.get_or_create(**{
-                getattr(User, conf.USER_MODEL_FACEBOOK_ID): user_id, 
+                conf.USER_MODEL_FACEBOOK_ID: user_id, 
                 'defaults': {'password': '!'}
             })  # also set unusable password
             if created:
@@ -112,5 +112,5 @@ class FacebookModelBackend(ModelBackend):
             return user
         else:
             return User.objects.filter(**{
-                getattr(User, conf.USER_MODEL_FACEBOOK_ID): user_id
+                conf.USER_MODEL_FACEBOOK_ID: user_id
             }).first()
