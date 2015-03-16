@@ -13,7 +13,7 @@ def get_lazy_access_token(request):
     if request.user.is_anonymous():
         return None
     code, use_redirect_uri = get_code_from_request(request)
-    fb_id = request.user.get_username()
+    fb_id = getattr(request.user, conf.USER_MODEL_FACEBOOK_ID)
 
     def get_lazy():
         access_token = get_cached_access_token(fb_id)
@@ -88,9 +88,8 @@ def get_signed_request_data(request):
 
 
 def is_fb_logged_in(request):
-    backendstr = 'django_facebook.auth.FacebookModelBackend'
     return request.user.is_authenticated() and \
-        request.session.get(BACKEND_SESSION_KEY) == backendstr
+        request.session.get(BACKEND_SESSION_KEY) == conf.BACKEND_STR
 
 
 class FacebookRequiredMixin(object):

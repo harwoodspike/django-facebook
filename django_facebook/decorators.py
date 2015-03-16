@@ -21,7 +21,7 @@ def canvas_only(function=None):
     def _dec(view_func):
         def _view(request, *args, **kwargs):
             # Make sure we're receiving a signed_request from facebook
-            if not request.POST.get('signed_request'):
+            if not request.POST.has_key('signed_request'):
                 return HttpResponseBadRequest('<h1>400 Bad Request</h1>'
                                     '<p>Missing <em>signed_request</em>.</p>')
 

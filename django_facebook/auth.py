@@ -13,9 +13,7 @@ from django_facebook.utils import (cache_access_token, del_cached_access_token,
 import conf
 
 User = get_user_model()
-
 log = logging.getLogger('django_facebook.auth')
-
 
 def login(request, user):
     """
@@ -25,7 +23,7 @@ def login(request, user):
     if user is None:
         user = request.user
     if SESSION_KEY in request.session:
-        if request.session[SESSION_KEY] != user.get_username():
+        if request.session[SESSION_KEY] != getattr(user, conf.USER_MODEL_FACEBOOK_ID):
             # To avoid reusing another user's session, create a new, empty
             # session if the existing session corresponds to a different
             # authenticated user.
@@ -33,14 +31,14 @@ def login(request, user):
     else:
         request.session.cycle_key()
     # save the username (is facebook id) as user id
-    request.session[SESSION_KEY] = user.get_username()
+    request.session[SESSION_KEY] = getattr(user, conf.USER_MODEL_FACEBOOK_ID)
     request.session[BACKEND_SESSION_KEY] = user.backend
     if hasattr(request, 'user'):
         request.user = user
     if hasattr(request, 'facebook'):
-        request.facebook.user_id = user.get_username()
+        request.facebook.user_id = getattr(user, conf.USER_MODEL_FACEBOOK_ID)
 
-    log.debug('Facebook user %s logged in' % user.get_username())
+    log.debug('Facebook user %s logged in' % getattr(user, conf.USER_MODEL_FACEBOOK_ID))
     user_logged_in.send(sender=user.__class__, request=request, user=user)
 
 
@@ -49,7 +47,7 @@ def logout(request):
     Logout the user, delete cached data and clear cookies so any auth calls
     coming after don't log the user in again.
     """
-    user_id = request.user.get_username()
+    user_id = getattr(request.user, conf.USER_MODEL_FACEBOOK_ID)
     del_cached_fb_user_data(user_id)
     del_cached_access_token(user_id)
     django_auth.logout(request)
@@ -103,13 +101,16 @@ class FacebookModelBackend(ModelBackend):
         """
         log.debug('FacebookModelBackend.get_user called')
         if self.create_on_not_found:
-            user, created = User.objects.get_or_create(
-                **{User.USERNAME_FIELD: user_id,
-                   'defaults': {'password': '!'}})  # also set unusable password
+            user, created = User.objects.get_or_create(**{
+                getattr(User, conf.USER_MODEL_FACEBOOK_ID): user_id, 
+                'defaults': {'password': '!'}
+            })  # also set unusable password
             if created:
                 log.debug('New user created for facebook account %s' % user_id)
                 kwargs = dict(sender=self, user=user, access_token=access_token)
                 facebook_user_created.send_robust(**kwargs)
             return user
         else:
-            return User.objects.filter(**{User.USERNAME_FIELD: user_id}).first()
+            return User.objects.filter(**{
+                getattr(User, conf.USER_MODEL_FACEBOOK_ID): user_id
+            }).first()

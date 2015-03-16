@@ -23,7 +23,7 @@ class FacebookAccessor(object):
     def __init__(self, request):
         self.auth = conf.auth
         if is_fb_logged_in(request):
-            self.user_id = request.user.get_username()
+            self.user_id = getattr(request.user, conf.USER_MODEL_FACEBOOK_ID)
             self.access_token = get_lazy_access_token(request)
             self.graph = facebook.GraphAPI(self.access_token)
 
@@ -91,7 +91,7 @@ class FacebookLogOutMiddleware(object):
                 return
 
             data = get_signed_request_data(request)
-            if data and data['user_id'] != request.user.username:
+            if data and data['user_id'] != getattr(request.user, conf.USER_MODEL_FACEBOOK_ID):
                 # Also logout if the fb session changes
                 logout(request)
                 log.debug('User logged out. User_id on server differs from client side')
