@@ -56,7 +56,7 @@ this to your base template before other javascript that makes use of facebook:
     {% load facebook %}
     {% facebook_init %}
         {% block facebook_code %}{% endblock %}
-    {% endfacebook %}
+    {% endfacebook_init %}
 
 And this should be added just before your ``</html>`` tag:
 
