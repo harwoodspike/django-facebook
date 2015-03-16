@@ -18,6 +18,7 @@ except AttributeError:
 
 BACKEND_STR = 'django_facebook.auth.FacebookModelBackend'										# String version of the location to the Facebook Authentication class
 USER_MODEL_FACEBOOK_ID = getattr(settings, 'USER_MODEL_FACEBOOK_ID', User.USERNAME_FIELD)		# Field on the user model that stores the facebook_id
+FACEBOOK_CREATE_ACCOUNT = getattr(settings, 'FACEBOOK_CREATE_ACCOUNT', False)
 
 VERSION = getattr(settings, 'FACEBOOK_VERSION', "2.2")
 auth = facebook.Auth(APP_ID, APP_SECRET, REDIRECT_URI, VERSION)

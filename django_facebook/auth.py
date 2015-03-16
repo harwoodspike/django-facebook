@@ -60,7 +60,7 @@ def logout(request):
 
 class FacebookModelBackend(ModelBackend):
 
-    create_on_not_found = True
+    create_on_not_found = conf.FACEBOOK_CREATE_ACCOUNT
 
     def authenticate(self, request=None, access_token=None, expires_in=None,
                      force_validate=False):
