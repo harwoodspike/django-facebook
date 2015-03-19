@@ -1,67 +1,9 @@
 <script>
-//############################# START DJANGO AJAX SETUP ###################################
-function getCookie(name) {
-	var cookieValue = null;
-	if (document.cookie && document.cookie != '') {
-		var cookies = document.cookie.split(';');
-		for (var i = 0; i < cookies.length; i++) {
-			var cookie = $.trim(cookies[i]);
-			// Does this cookie string begin with the name we want?
-			if (cookie.substring(0, name.length + 1) == (name + '=')) {
-				cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-				break;
-			}
-		}
-	}
-	return cookieValue;
-}
-function setCookie(name,value,days) {
-	if (days) {
-		var date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-	}
-	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function csrfSafeMethod(method) {
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-function sameOrigin(url) {
-		var host = document.location.host; // host + port
-		var protocol = document.location.protocol;
-		var sr_origin = '//' + host;
-		var origin = protocol + sr_origin;
-		// Allow absolute or scheme relative URLs to same origin
-		return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-				(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-				!(/^(\/\/|http:|https:).*/.test(url));
-}
-$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-				if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-						xhr.setRequestHeader("X-CSRFToken", csrftoken);
-				}
-		}
-});
-//############################# END DJANGO AJAX SETUP ###################################
-function testAPI() {
-	console.log('Welcome!  Fetching your information.... ');
-	FB.api('/me', function(response) {
-		console.log('Successful login for: ' + response.name);
-		document.getElementById('status').innerHTML = 'Thanks for logging in, ' + response.name + '!';
-	});
-}
-
 // This is called with the results from from FB.getLoginStatus().
 function statusChangeCallback(response) {
-	console.log('statusChangeCallback');
-	console.log(response);
+	console.debug('statusChangeCallback');
+	console.debug(response);
 	if (response.status === 'connected') {
-		// Logged into your app and Facebook.
-		testAPI();
-
 		// Notify the backend. The signed request is present in the fbsr_ cookie
 		$.post('/facebook/login/client/', {
 			user_id: response.authResponse.userID,
@@ -70,11 +12,11 @@ function statusChangeCallback(response) {
 		);
 	} else if (response.status === 'not_authorized') {
 		// The person is logged into Facebook, but not your app.
-		console.log('Please log into this app.');
+		console.debug('Please log into this app.');
 	} else {
 		// The person is not logged into Facebook, so we're not sure if
 		// they are logged into this app or not.
-		console.log('Please log into Facebook.');
+		console.debug('Please log into Facebook.');
 	}
 }
 
@@ -88,7 +30,7 @@ window.fbAsyncInit = function() {
 	});
 
 	FB.getLoginStatus(function(response) {
-		console.log("FB SDK Get Login Status")
+		console.debug("FB SDK Get Login Status")
 		statusChangeCallback(response);
 	});
 
